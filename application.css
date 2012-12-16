@@ -6,6 +6,7 @@ body {
   color: #333;
   font-weight: normal;
   font-family: "Helvetica Neue", "Helvetica", sans-serif;
+  border-top: 10px solid PaleVioletRed;
 }
 
 .row {
@@ -124,6 +125,14 @@ h5 {
 p {
   padding: 0px;  
   margin: 0px 0px 22px;
+}
+
+a {
+  color: PaleVioletRed; 
+}
+
+a:visited {
+  color: Maroon;
 }
 
 .code {
