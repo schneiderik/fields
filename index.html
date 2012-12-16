@@ -1,8 +1,500 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="application.css">
+    <script type="text/javascript" src="jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="fields.js"></script>
   </head>
   <body>
-    <h1>Fields</h1>
+
+    <header id="main-header">
+      <h1>Fields.js</h1>
+      <p class="subtitle">
+        Manage arbitrary collections of inputs, selects, and textareas.
+      </p>
+
+      <div class="centered-col">
+        <p class="text-left todo">
+          <span class="highlight">TODO</span> Make this awesome. This is a work in progress and I would love to make working with, and validating, fields and forms a much more simple process. If you would like to offer your help making this tool and its documentation better, I would graciously accept it.
+        </p>
+      </div>
+    </header>
+
+    <section id="main-section">
+
+      <section id="overview" class="row">
+
+        <header class="block-header">
+          <h2>Overview</h2>
+        </header>
+
+        <div class="col1">
+          <p>
+            <strong>Fields.js</strong> creates collections of fields. Each field is constantly evaluated for validity, and is accessible through the collection.
+          </p>
+          <p>
+            A field is any uniquely named text-based input, select, textarea, group of radio inputs, or group of checkbox inputs.
+          </p>
+
+          <header class="spaced-header">
+            <h4>How to use:</h4>
+          </header>
+          <ol class="spaced-list-items">
+            <li>
+              <p>
+                Add evaluations to FieldsUtils.evaluationRegistry.
+              </p>
+              <code>> FieldsUtils.evaluationRegistry.add({
+    context: 'errors',
+    selector: '[type="email"], 
+    statement: function(field){
+      if (emailRegexComparison(field)) {
+        return 'Invalid Email'
+      }
+    }
+  });
+  <em>EvaluationCollection</em></code>
+              <p>
+                As the user interacts with fields in the DOM, those fields will be evaluated by any evaluations with a selector that matches the field being interacted with.
+              </p>
+              <p>
+                Fields that return evaluations of the context 'errors', or that are required and blank, are considered not valid.
+            </li>
+            <li>
+              <p>
+                Create a collection of fields.
+              </p>
+              <code>> form_one_fields = Fields.in('#form-one')
+  <em>Fields</em></code>
+            </li>
+            <li>
+              <p>
+                Use the collection to interact with the form.
+              <p>
+              <code>> form_one_fields.isValid
+  <em>false</em>
+> form_one_fields.get('email_field').errors()
+  <em>['Invalid Email']</em></code>
+            </li>
+          </ol>
+        </div>
+
+        <div class="col2">
+          <form id="form-one">
+            <legend><span>Form One</span></legend>
+            <div class="hidden-field">
+              <input type="hidden" name="hidden_field" value="This field is hidden"/>
+            </div>
+
+            <div class="field">
+              <label for="text_field">Text field:</label>
+              <input type="text" name="text_field"/>
+            </div>
+
+
+            <div class="field">
+              <label for="email_field">Email field:</label>
+              <input type="email" name="email_field" value="example@emailcom"/>
+            </div>
+
+            <div class="field">
+              <label for="select_field">Select field:</label>
+              <select name="select_field">
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="radio_field">Radio field:</label>
+              <div class="radio-group">
+                <label>
+                  <input type="radio" name="radio_field" value="1" checked>
+                  One
+                </label>
+                <label>
+                  <input type="radio" name="radio_field" value="2">
+                  Two
+                </label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="checkbox_field">Checkbox field:</label>
+              <div class="checkbox-group">
+                <label>
+                  <input type="checkbox" name="checkbox_field" value="1">
+                  One
+                </label>
+                <label>
+                  <input type="checkbox" name="checkbox_field" value="2" checked>
+                  Two
+                </label>
+                <label>
+                  <input type="checkbox" name="checkbox_field" value="3" checked>
+                  Three
+                </label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="textarea_field">Textarea field:</label>
+              <textarea name="textarea_field">This is example text that is in a textarea.</textarea>
+            </div>
+
+            <div class="form-actions">
+              <input type="submit" value="Submit"/>
+            </div>
+          </form>
+        </div> <!-- col2 -->
+
+      </section> <!-- overview -->
+
+      <section id="tests" class="row">
+
+        <header class="block-header">
+          <h2>Tests</h2>
+        </header>
+
+        <div class="centered-col">
+          <p class="todo">
+            <span class="highlight">TODO</span> Write tests.
+          </p>
+        </div>
+
+      </section> <!-- tests -->
+
+      <section id="available-classes" class="row">
+
+        <header class="block-header">
+          <h2>Available Classes and Methods</h2>
+        </header>
+
+        <section id="fields" class="row">
+
+          <header class="sub-section-header">
+            <h3>Fields</h3>
+          </header>
+
+          <section id="fields-class-methods" class="row">
+
+            <header class="spaced-header">
+              <h4>Class Methods</h4>
+            </header>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">@all()</h5>
+                <p>
+                  Creates an instance of the Fields class with a collection of all of the fields on the page
+                </p>
+              </div>
+              <div class="col2">
+                <code>> Fields.all()
+  <em>Fields</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">@in(selector)</h5>
+                <p>
+                  Creates an instance of the Fields class with a collection of fields scoped to the passed selector.
+                </p>
+                <p>
+                  If the selector you pass is an input, select, or textarea, <span class="code">@in</span> will return a Field model instance instead of an instance of Fields.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> Fields.in('#form-one')
+  <em>Fields</em></code>
+                <code>> Fields.in('[name="email_field"]')
+  <em>Field</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">@within(selector), @at(selector)</h5>
+                <p>
+                  Aliases for @in(selector)
+                </p>
+              </div>
+            </div>
+
+          </section> <!-- fields-class-methods -->
+
+
+          <section id="fields-instance-methods" class="row">
+
+            <header class="spaced-header">
+              <h4>Instance Methods</h4>
+            </header>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">get(name)</h5>
+                <p>
+                  Gets a Field model by the field's name.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> Fields.in('#form-one').get('email_field')
+  <em>Field</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">clear()</h5>
+                <p>
+                  Clears the value of all of the field models. Internal event bindings then update the fields in the DOM to reflect the blank state.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> Fields.in('#form-one').clear()
+  <em>Fields</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">collect(attribute)</h5>
+                <p>
+                  Collect a single attribute of all of the models into an object keyed on the name of the Field.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> Fields.in('#form-one').collect('value')
+  <em>{ text_field: ''
+    email_field: 'example@email.com'
+    select_field: ''
+    radio_field: '1'
+    checkbox_field: ['2','3']
+    textarea_field: "This is example text that is in a textarea." }</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">isValid</h5>
+                <p>
+                  Boolean that is true when all of the collection's models are valid.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> Fields.in('#form-one').isValid
+  <em>false</em></code>
+              </div>
+            </div>
+
+          </section> <!-- fields-instance-methods -->
+
+        </section> <!-- fields -->
+
+        <section id="field" class="row">
+
+          <header class="sub-section-header">
+            <h3>Field</h3>
+          </header>
+
+          <div class="row">
+            <div class="centered-col">
+              <p>
+                There are no class methods for the Field model class because the instances are automatically generated when you create an instance of the Fields collection class.
+              </p>
+            </div>
+          </div>
+
+          <section id="field-instance-methods" class="row">
+
+            <header class="spaced-header">
+              <h4>Instance Methods</h4>
+            </header>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">get(attribute)</h5>
+                <p>
+                  Get an attribute specified by the attribute's name.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> email = Fields.at('[name="email_field"]')
+  <em>Field</em>
+> email.get('required')
+  <em>true</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">value(value), val(value)</h5>
+                <p>
+                  A getter and setter for the Field value. With no argument, <span class="code">val()</span> will return the current value of the field. This does the same thing as <span class="code">field.get('value')</span>.
+                </p>
+                <p>
+                  If an argument is passed, the Field's value will be set and the field in the DOM will be updated with the new value.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> email.val()
+  <em>'example@email.com'</em></code>
+                <code>> email.val('other@email.com')
+  <em>Field</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">clear()</h5>
+                <p>
+                  A convenience method for <span class="code">field.val('')</span>. Sets the value of the field to be an empty string.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> email.clear()
+  <em>Field</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">evaluate()</h5>
+                <p>
+                  Manual trigger to have the field evaluated by the EvaluationRegistry.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> email.evaluate()
+  <em>{ errors: ['Invalid Email'] }</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">errors()</h5>
+                <p>
+                  Convenience method for <span class="code">email.get('evaluations').errors</span>
+                </p>
+              </div>
+              <div class="col2">
+                <code>> email.errors()
+  <em>['Invalid Email']</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">isValid</h5>
+                <p>
+                  Returns false if there are any evaluations with context 'errors', or if the field is both required and empty.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> email.isValid
+  <em>false</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">isRequired</h5>
+                <p>
+                  Convenience for <span class="code">email.get('required')</span>.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> email.isRequired
+  <em>true</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">isEmpty</h5>
+                <p>
+                  Convenience for <span class="code">email.val() == ''</span>.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> email.isEmpty
+  <em>false</em></code>
+              </div>
+            </div>
+
+          </section> <!-- field-instance-methods -->
+        </section> <!-- field -->
+
+        <section id="evaluation-collection" class="row">
+
+          <header class="sub-section-header">
+            <h3>EvaluationCollection</h3>
+          </header>
+
+          <div class="row">
+            <div class="centered-col">
+              <p>
+                The EvaluationCollection class is instanced into <span class="code">FieldsUtils.evaluationRegistry</span>.
+                The only point you should really be interacting with it is adding evaluation objects to the registry.
+              </p>
+
+              <p>
+                An evaluation object consists of three parts:
+              </p>
+
+              <ol>
+                <li><strong>selector:</strong> The css selector you want to apply this evaluation to.</li>
+                <li><strong>context:</strong> The context of the evaluation. Most typical would be 'errors'.</li>
+                <li><strong>statement:</strong> The function that will run on the field when it is evaluated. It takes one argument, which is representitive of the field being evaluated.</li>
+              </ol>
+            </div>
+          </div>
+
+          <section id="evaluation-collection-instance-methods" class="row">
+
+            <header class="spaced-header">
+              <h4>Instance Methods</h4>
+            </header>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">add(evaluations)</h5>
+                <p>
+                  Allows you to add evaluations to an EvaluationCollection instance. Accepts a single object or an array of objects.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> FieldsUtils.evaluationRegistry.add({
+    context: 'errors',
+    selector: '[type="email"], 
+    statement: function(field){
+      if (emailRegexComparison(field)) {
+        return 'Invalid Email'
+      }
+    }
+  });
+  <em>EvaluationCollection</em></code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">evaluate(field)</h5>
+                <p>
+                  Checks the evaluation registry for evaluations with selectors matching the passed in field. 
+                </p>
+              </div>
+              <div class="col2">
+                <code>> FieldsUtils.evaluationRegistry.evaluate( $('[type="email"]') )
+  <em>{ errors: ['Invalid email'] }</em></code>
+              </div>
+            </div>
+
+          </section> <!-- evaluation-collection-instance-methods -->
+        </section> <!-- evaluation-collection -->
+      </section> <!-- available-classes -->
+    </section> <!-- main-section -->
   </body>
 </html>
