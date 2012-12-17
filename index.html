@@ -73,8 +73,13 @@
               <p>
               <code>> form_one_fields.isValid
   <em>false</em>
-> form_one_fields.get('email_field').errors()
-  <em>['Invalid Email']</em></code>
+> email = form_one_fields.get('email_field')
+  <em>Field</em>
+> email.errors()
+  <em>['Invalid Email']</em>
+> email.on('change:valid', function(val){
+    doSomething(val)
+  });</code>
             </li>
           </ol>
         </div>
@@ -291,6 +296,44 @@
 
           </section> <!-- fields-instance-methods -->
 
+          <section id="fields-events" class="row">
+
+            <header class="spaced-header">
+              <h4>Events</h4>
+            </header>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">change:valid</h5>
+                <p>
+                  A 'change:valid' event will fire when all of the collection's models are valid. It will also fire if it is valid and any of its models become invalid.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> Fields.in('#form-one')
+    .on('change:valid' function(val){
+      doSomething(val)
+    });</code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">change:value</h5>
+                <p>
+                  A 'change:value' event will fire if any of the collection's models values change.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> Fields.in('#form-one')
+    .on('change:value' function(val){
+      doSomething(val)
+    });</code>
+              </div>
+            </div>
+
+          </section> <!-- fields-events -->
+
         </section> <!-- fields -->
 
         <section id="field" class="row">
@@ -425,6 +468,43 @@
             </div>
 
           </section> <!-- field-instance-methods -->
+
+          <section id="field-events" class="row">
+
+            <header class="spaced-header">
+              <h4>Events</h4>
+            </header>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">change:valid</h5>
+                <p>
+                  A 'change:valid' event will fire when the Field's valid attribute changes.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> email.on('change:valid' function(val){
+    doSomething(val)
+  });</code>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col1">
+                <h5 class="code">change:value</h5>
+                <p>
+                  A 'change:value' event will fire when the Field's value changes.
+                </p>
+              </div>
+              <div class="col2">
+                <code>> email.on('change:value' function(val){
+    doSomething(val)
+  });</code>
+              </div>
+            </div>
+
+          </section> <!-- fields-events -->
+
         </section> <!-- field -->
 
         <section id="evaluation-collection" class="row">
