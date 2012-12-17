@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" href="application.css">
     <script type="text/javascript" src="jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="fields.js"></script>
+    <script type="text/javascript" src="application.js"></script>
   </head>
   <body>
 
@@ -12,12 +13,6 @@
       <p class="subtitle">
         Manage arbitrary collections of inputs, selects, and textareas.
       </p>
-
-      <div class="centered-col">
-        <p class="text-left todo">
-          <span class="highlight">TODO</span> Make this awesome. This is a work in progress and I would love to make working with, and validating, fields and forms a much more simple process. If you would like to offer your help making this tool and its documentation better, I would graciously accept it.
-        </p>
-      </div>
     </header>
 
     <section id="main-section">
@@ -28,17 +23,27 @@
           <h2>Overview</h2>
         </header>
 
-        <div class="col1">
+        <div class="centered-col">
           <p>
             <strong>Fields.js</strong> creates collections of fields. Each field is constantly evaluated for validity, and is accessible through the collection.
           </p>
           <p>
             A field is any uniquely named text-based input, select, textarea, group of radio inputs, or group of checkbox inputs.
           </p>
+          <p class="text-left todo">
+            <span class="highlight">TODO</span> Make this awesome. This is a work in progress and I would love to make working with, and validating, fields and forms a much more simple process. If you would like to offer your help making this tool and its documentation better, I would graciously accept it.
+          </p>
+        </div>
 
-          <header class="spaced-header">
-            <h4>How to use:</h4>
-          </header>
+      </section>
+
+      <section id="how-to-use" class="row">
+
+        <header class="block-header">
+          <h2>How to Use</h2>
+        </header>
+
+        <div class="col1">
           <ol class="spaced-list-items">
             <li>
               <p>
@@ -60,6 +65,10 @@
               <p>
                 Fields that return evaluations of the context 'errors', or that are required and blank, are considered not valid.
             </li>
+          </ol>
+        </div>
+        <div class="col2">
+          <ol class="spaced-list-items" start="2">
             <li>
               <p>
                 Create a collection of fields.
@@ -82,93 +91,156 @@
   });</code>
             </li>
           </ol>
+          <p>
+            The tool currently does not contain a method of displaying errors and other evaluation results. For the time being, it is up to the implementer.
+          </p>
+        </div>
+      </section>
+
+      <section id="example" class="row">
+
+        <header class="block-header">
+          <h2>Example</h2>
+        </header>
+
+        <div class="row">
+          <div class="centered-col">
+            <p>
+              As an example, this set of fields is an instance of <span class="code">Fields.in('#form-one')</span>. There is also one 'errors' context evaluation added to the registry for email validation.
+            </p>
+          </div>
         </div>
 
-        <div class="col2">
-          <form id="form-one">
-            <legend><span>Form One</span></legend>
-            <div class="hidden-field">
-              <input type="hidden" name="hidden_field" value="This field is hidden"/>
-            </div>
+        <form id="form-one">
+          <div class="hidden-field">
+            <input type="hidden" name="hidden_field" value="This field is hidden"/>
+          </div>
 
-            <div class="field">
+          <div class="field">
+            <div class="col1">
               <label for="text_field">Text field:</label>
-              <input type="text" name="text_field"/>
+              <input type="text" name="text_field" required/>
             </div>
+            <div class="col2">
+              <ul>
+                <li><strong>Valid:</strong> <span id="form-one-text_field-valid"></span></li>
+                <li><strong>Value:</strong> <span id="form-one-text_field-value"></span></li>
+                <li><strong>Errors:</strong> <span id="form-one-text_field-errors"></span></li>
+              </ul>
+            </div>
+          </div>
 
 
-            <div class="field">
+          <div class="field">
+            <div class="col1">
               <label for="email_field">Email field:</label>
-              <input type="email" name="email_field" value="example@emailcom"/>
+              <input type="email" name="email_field" value="example@emailcom" required/>
             </div>
+            <div class="col2">
+              <ul>
+                <li><strong>Valid:</strong> <span id="form-one-email_field-valid"></span></li>
+                <li><strong>Value:</strong> <span id="form-one-email_field-value"></span></li>
+                <li><strong>Errors:</strong> <span id="form-one-email_field-errors"></span></li>
+              </ul>
+            </div>
+          </div>
 
-            <div class="field">
+          <div class="field">
+            <div class="col1">
               <label for="select_field">Select field:</label>
-              <select name="select_field">
+              <select name="select_field" required>
                 <option value="1">One</option>
                 <option value="2">Two</option>
                 <option value="3">Three</option>
               </select>
             </div>
+            <div class="col2">
+              <ul>
+                <li><strong>Valid:</strong> <span id="form-one-select_field-valid"></span></li>
+                <li><strong>Value:</strong> <span id="form-one-select_field-value"></span></li>
+                <li><strong>Errors:</strong> <span id="form-one-select_field-errors"></span></li>
+              </ul>
+            </div>
+          </div>
 
-            <div class="field">
+          <div class="field">
+            <div class="col1">
               <label for="radio_field">Radio field:</label>
               <div class="radio-group">
                 <label>
-                  <input type="radio" name="radio_field" value="1" checked>
+                  <input type="radio" name="radio_field" value="1" checked required>
                   One
                 </label>
                 <label>
-                  <input type="radio" name="radio_field" value="2">
+                  <input type="radio" name="radio_field" value="2" required>
                   Two
                 </label>
               </div>
             </div>
+            <div class="col2">
+              <ul>
+                <li><strong>Valid:</strong> <span id="form-one-radio_field-valid"></span></li>
+                <li><strong>Value:</strong> <span id="form-one-radio_field-value"></span></li>
+                <li><strong>Errors:</strong> <span id="form-one-radio_field-errors"></span></li>
+              </ul>
+            </div>
+          </div>
 
-            <div class="field">
+          <div class="field">
+            <div class='col1'>
               <label for="checkbox_field">Checkbox field:</label>
               <div class="checkbox-group">
                 <label>
-                  <input type="checkbox" name="checkbox_field" value="1">
+                  <input type="checkbox" name="checkbox_field" value="1" required>
                   One
                 </label>
                 <label>
-                  <input type="checkbox" name="checkbox_field" value="2" checked>
+                  <input type="checkbox" name="checkbox_field" value="2" checked required>
                   Two
                 </label>
                 <label>
-                  <input type="checkbox" name="checkbox_field" value="3" checked>
+                  <input type="checkbox" name="checkbox_field" value="3" checked required>
                   Three
                 </label>
               </div>
             </div>
-
-            <div class="field">
-              <label for="textarea_field">Textarea field:</label>
-              <textarea name="textarea_field">This is example text that is in a textarea.</textarea>
+            <div class="col2">
+              <ul>
+                <li><strong>Valid:</strong> <span id="form-one-checkbox_field-valid"></span></li>
+                <li><strong>Value:</strong> <span id="form-one-checkbox_field-value"></span></li>
+                <li><strong>Errors:</strong> <span id="form-one-checkbox_field-errors"></span></li>
+              </ul>
             </div>
+          </div>
 
-            <div class="form-actions">
+          <div class="field">
+            <div class="col1">
+              <label for="textarea_field">Textarea field:</label>
+              <textarea name="textarea_field" required>This is example text that is in a textarea.</textarea>
+            </div>
+            <div class="col2">
+              <ul>
+                <li><strong>Valid:</strong> <span id="form-one-textarea_field-valid"></span></li>
+                <li><strong>Value:</strong> <span id="form-one-textarea_field-value"></span></li>
+                <li><strong>Errors:</strong> <span id="form-one-textarea_field-errors"></span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <div class="col1">
               <input type="submit" value="Submit"/>
             </div>
-          </form>
-        </div> <!-- col2 -->
+            <div class="col2">
+              <ul>
+                <li><strong>Form Validity:</strong> <span id="form-one-valid"></span></li>
+             </ul>
+            </div>
+          </div>
+        </form>
 
       </section> <!-- overview -->
 
-      <section id="tests" class="row">
-
-        <header class="block-header">
-          <h2>Tests</h2>
-        </header>
-
-        <div class="centered-col">
-          <p class="todo">
-            <span class="highlight">TODO</span> Write tests.
-          </p>
-        </div>
-
-      </section> <!-- tests -->
 
       <section id="available-classes" class="row">
 
@@ -575,6 +647,21 @@
           </section> <!-- evaluation-collection-instance-methods -->
         </section> <!-- evaluation-collection -->
       </section> <!-- available-classes -->
+
+      <section id="tests" class="row">
+
+        <header class="block-header">
+          <h2>Tests</h2>
+        </header>
+
+        <div class="centered-col">
+          <p class="todo">
+            <span class="highlight">TODO</span> Write tests.
+          </p>
+        </div>
+
+      </section> <!-- tests -->
+
     </section> <!-- main-section -->
     <footer id="main-footer" class="text-center muted">
       Erik Schneider

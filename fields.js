@@ -149,7 +149,7 @@
       this.attributes.name = this.el.attr('name');
       this.attributes.type = this.el.attr('type');
       this.attributes.value = this.getFieldValueFromDOM();
-      this.isRequired = this.attributes.required = this.el.hasClass('required' || this.el.is('[required]'));
+      this.isRequired = this.attributes.required = (this.el.hasClass('required') || this.el.is('[required]'));
       this.isEmpty = this.attributes.empty = this.el.val().length === 0;
       return this.evaluate();
     };
@@ -182,11 +182,16 @@
       } else {
         $.extend(this.attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(this.el));
       }
+      this.trigger("change:valid", this, this.isValid);
       return this.isValid = this.attributes.valid = !(this.get('evaluations').errors != null);
     };
 
     Field.prototype.errors = function() {
-      return this.get('evaluations').errors;
+      if (typeof this.get('evaluations').errors == 'undefined') {
+        return [];
+      } else {
+        return this.get('evaluations').errors;
+      }
     };
 
     Field.prototype.getFieldValueFromDOM = function() {

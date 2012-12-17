@@ -12,7 +12,7 @@ body {
 .row {
   width: 860px; 
   margin: 0px auto;
-  padding: 66px 0;
+  padding: 88px 0;
   border-top: 1px solid #DBDBDB;
   *zoom: 1;
 }
@@ -32,13 +32,20 @@ body {
   padding-bottom: 110px;
 }
 
+#main-section > .row > .row:last-child {
+  padding-bottom: 0px;
+}
+
 .row:before,
-.row:after {
+.row:after,
+.field:before,
+.field:after {
   display: table;
   content: "";
 }
 
-.row:after {
+.row:after,
+.field:after {
   clear: both;
 }
 
@@ -80,6 +87,10 @@ header.sub-section-header h3 {
   display: inline-block;
   padding: 6px 10px;
   margin-bottom: 10px;
+}
+
+footer {
+  margin-top: 110px;
 }
 
 .text-left { text-align: left; }
@@ -155,14 +166,20 @@ ol {
   list-style: decimal outside;
 }
 
+ul {
+  list-style: none;
+  margin: 0px 0px 22px;
+}
+
 ol.spaced-list-items li,
 ul.spaced-list-items li {
-  padding-bottom: 22px;
+  margin-bottom: 22px;
 }
 
 p:last-child,
 ol:last-child,
-ul:last-child {
+ul:last-child,
+li:last-child {
   margin-bottom: 0px;
 }
 
@@ -209,6 +226,8 @@ header.centered-header {
 
 .field + .field {
   margin-top: 16px; 
+  padding-top: 22px; 
+  border-top: 1px dashed #DBDBDb;
 }
 
 legend {
@@ -236,6 +255,12 @@ label {
   vertical-align: middle;
   display: inline-block;
   color: #333;
+}
+
+.form-actions {
+  margin-top: 16px;
+  padding-top: 22px; 
+  border-top: 1px dashed #DBDBDb;
 }
 
 input[type="text"],
