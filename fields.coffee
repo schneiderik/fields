@@ -140,6 +140,7 @@ class Field extends Events
     @el         = $(element)
     @parent     = $(parent)
     @attributes = {}
+    @val = @value
 
     # Update attributes when a user interacts with the field
     @parent.find("[name='#{@el.attr('name')}']").on 'keyup blur focus change', (e, options={})=>
@@ -147,28 +148,40 @@ class Field extends Events
       @value @getFieldValueFromDOM()
 
     # Evaluate the field for any errors, warnings, etc. when the value changes
-    @on 'change:value', (value)->
-      @isEmpty = @attributes.empty = value.length is 0
+    @on 'change:value', (value)=>
+      @attributes.empty = @isEmpty()
       @evaluate()
 
     @setAttributes()
-    @val = @value
 
     @
 
   setAttributes: ->
-    @attributes.name     = @el.attr 'name'
-    @attributes.type     = @el.attr 'type'
-    @attributes.value    = @getFieldValueFromDOM()
-
-    @isRequired = @attributes.required = (@el.hasClass 'required' or @el.is('[required]'))
-    @isEmpty    = @attributes.empty    = @el.val().length is 0
-
+    @attributes.name        = @el.attr 'name'
+    @attributes.type        = @el.attr 'type'
+    @attributes.value       = @getFieldValueFromDOM()
+    @attributes.required    = @isRequired()
+    @attributes.empty       = @isEmpty()
+    @attributes.evaluations = {}
     @evaluate()
+
+  isEmpty: ()->
+    return true if @val().length is 0
+    return true if @val() is []
+    return false
+
+  isRequired: ()->
+    return true if @el.hasClass 'required'
+    return true if @el.is('[required]')
+    return false
+
+  isValid: ()->
+    return false if @get('evaluations').errors?
+    return true
 
   # Get value of an attribute at a specific key
   get: (attr)->
-    @attributes[attr]
+    return @attributes[attr]
 
   # Get value of the field, or set it by passing an argument
   value: (arg)->
@@ -178,26 +191,38 @@ class Field extends Events
     @attributes.value = arg
     @trigger "change:value", @, arg
     @updateFieldValueInDOM arg
+
     return @
 
   # Convenience method for setting the value back to nothing
   clear: ->
     @value ''
 
+    return @
+
+  errors: ->
+    if @get('evaluations').errors?
+      return @get('evaluations').errors
+    else
+      return []
+
   # Evaluate the field against evaluations stored in the evaluationRegistry and
   # return an object of any results keyed on the context of the evaluation. i.e. 'errors'
   evaluate: ->
+    oldValidity = @isValid()
     @attributes.evaluations = {}
-    if @isRequired and @isEmpty
+    if @isRequired() and @isEmpty()
       @attributes.evaluations.errors = ['Field required']
     else
       $.extend @attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(@el)
 
-    # A field is valid if it has no errors.
-    @isValid = @attributes.valid = !@get('evaluations').errors?
+    # Trigger event if validity changes
+    @trigger('change:valid', @, @isValid()) if oldValidity isnt @isValid()
 
-  errors: ->
-    @get('evaluations').errors
+    # A field is valid if it has no errors.
+    @attributes.valid = @isValid()
+
+    return @get('evaluations')
 
   # Getting and setting values is a bit complicated because of radio and checkbox inputs.
   # Only one field model should be generated for the set of inputs with the same name.
@@ -308,12 +333,16 @@ class Fields extends Events
       model.on 'change:value', (e)=>
         @trigger 'change:value'
 
+    return @
+
   # Get a field model by it's name
   get: (name)-> @models[name]
 
   # Convenience method to clear the values of all of the fields in Fields
   clear: ->
     model.clear() for name, model of @models
+
+    return @
 
   # Collect a specified value from each field model keyed on the name of that field.
   collect: (value)->
@@ -322,20 +351,18 @@ class Fields extends Events
       dict[name] = model.get(value)
     return dict
 
-  # Check the validity of all of the field models to see if the collection is valid.
-  getValidity: ()->
+  isValid: ()->
     valid = true
-    valid = false for name, model of @models when model.isValid is false
-
-    @trigger('change:valid', @, valid) if @isValid isnt valid
-    @isValid = valid
+    valid = false for name, model of @models when model.isValid() is false
+    return valid
 
   # Update the collections validity whenever one of its models validity changes
   trackValidity: ()->
-    @getValidity()
+    oldValidity = @isValid()
+
     for name, model of @models
       model.on 'change:valid', (e)=>
-        @getValidity()
+        @trigger('change:valid', @, @isValid()) if @isValid() isnt oldValidity
 
   generateModels: ()->
     @models = {}
