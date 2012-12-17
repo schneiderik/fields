@@ -126,6 +126,7 @@
       this.el = $(element);
       this.parent = $(parent);
       this.attributes = {};
+      this.val = this.value;
       this.parent.find("[name='" + (this.el.attr('name')) + "']").on('keyup blur focus change', function(e, options) {
         if (options == null) {
           options = {};
@@ -136,11 +137,10 @@
         return _this.value(_this.getFieldValueFromDOM());
       });
       this.on('change:value', function(value) {
-        this.isEmpty = this.attributes.empty = value.length === 0;
-        return this.evaluate();
+        _this.attributes.empty = _this.isEmpty();
+        return _this.evaluate();
       });
       this.setAttributes();
-      this.val = this.value;
       this;
 
     }
@@ -149,9 +149,37 @@
       this.attributes.name = this.el.attr('name');
       this.attributes.type = this.el.attr('type');
       this.attributes.value = this.getFieldValueFromDOM();
-      this.isRequired = this.attributes.required = (this.el.hasClass('required') || this.el.is('[required]'));
-      this.isEmpty = this.attributes.empty = this.el.val().length === 0;
+      this.attributes.required = this.isRequired();
+      this.attributes.empty = this.isEmpty();
+      this.attributes.evaluations = {};
       return this.evaluate();
+    };
+
+    Field.prototype.isEmpty = function() {
+      if (this.val().length === 0) {
+        return true;
+      }
+      if (this.val() === []) {
+        return true;
+      }
+      return false;
+    };
+
+    Field.prototype.isRequired = function() {
+      if (this.el.hasClass('required')) {
+        return true;
+      }
+      if (this.el.is('[required]')) {
+        return true;
+      }
+      return false;
+    };
+
+    Field.prototype.isValid = function() {
+      if (this.get('evaluations').errors != null) {
+        return false;
+      }
+      return true;
     };
 
     Field.prototype.get = function(attr) {
@@ -172,26 +200,32 @@
     };
 
     Field.prototype.clear = function() {
-      return this.value('');
+      this.value('');
+      return this;
+    };
+
+    Field.prototype.errors = function() {
+      if (this.get('evaluations').errors != null) {
+        return this.get('evaluations').errors;
+      } else {
+        return [];
+      }
     };
 
     Field.prototype.evaluate = function() {
+      var oldValidity;
+      oldValidity = this.isValid();
       this.attributes.evaluations = {};
-      if (this.isRequired && this.isEmpty) {
+      if (this.isRequired() && this.isEmpty()) {
         this.attributes.evaluations.errors = ['Field required'];
       } else {
         $.extend(this.attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(this.el));
       }
-      this.trigger("change:valid", this, this.isValid);
-      return this.isValid = this.attributes.valid = !(this.get('evaluations').errors != null);
-    };
-
-    Field.prototype.errors = function() {
-      if (typeof this.get('evaluations').errors == 'undefined') {
-        return [];
-      } else {
-        return this.get('evaluations').errors;
+      if (oldValidity !== this.isValid()) {
+        this.trigger('change:valid', this, this.isValid());
       }
+      this.attributes.valid = this.isValid();
+      return this.get('evaluations');
     };
 
     Field.prototype.getFieldValueFromDOM = function() {
@@ -380,6 +414,7 @@
           return _this.trigger('change:value');
         });
       }
+      return this;
     }
 
     Fields.prototype.get = function(name) {
@@ -387,14 +422,13 @@
     };
 
     Fields.prototype.clear = function() {
-      var model, name, _ref, _results;
+      var model, name, _ref;
       _ref = this.models;
-      _results = [];
       for (name in _ref) {
         model = _ref[name];
-        _results.push(model.clear());
+        model.clear();
       }
-      return _results;
+      return this;
     };
 
     Fields.prototype.collect = function(value) {
@@ -408,32 +442,31 @@
       return dict;
     };
 
-    Fields.prototype.getValidity = function() {
+    Fields.prototype.isValid = function() {
       var model, name, valid, _ref;
       valid = true;
       _ref = this.models;
       for (name in _ref) {
         model = _ref[name];
-        if (model.isValid === false) {
+        if (model.isValid() === false) {
           valid = false;
         }
       }
-      if (this.isValid !== valid) {
-        this.trigger('change:valid', this, valid);
-      }
-      return this.isValid = valid;
+      return valid;
     };
 
     Fields.prototype.trackValidity = function() {
-      var model, name, _ref, _results,
+      var model, name, oldValidity, _ref, _results,
         _this = this;
-      this.getValidity();
+      oldValidity = this.isValid();
       _ref = this.models;
       _results = [];
       for (name in _ref) {
         model = _ref[name];
         _results.push(model.on('change:valid', function(e) {
-          return _this.getValidity();
+          if (_this.isValid() !== oldValidity) {
+            return _this.trigger('change:valid', _this, _this.isValid());
+          }
         }));
       }
       return _results;

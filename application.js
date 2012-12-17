@@ -22,7 +22,7 @@ $(function(){
 
   for (var i = 0; i < inputs.length; i++) {
 
-    $('#form-one-' + inputs[i] + '-valid').text(fields.get(inputs[i]).isValid);
+    $('#form-one-' + inputs[i] + '-valid').text(fields.get(inputs[i]).isValid());
     function valid_binding(input) {
       fields.get(input).on('change:valid', function(e, val){
         $('#form-one-' + input + '-valid').text(val)
@@ -47,8 +47,13 @@ $(function(){
     error_binding(inputs[i]);
   }
 
-  $('#form-one-valid').text(fields.isValid);
+  $('#form-one-valid').text(fields.isValid());
   fields.on('change:valid', function(e, val){
-    $('#form-one-valid').text(fields.isValid);
+    $('#form-one-valid').text(fields.isValid());
+  });
+
+  $('#form-one').submit(function(e){
+    e.preventDefault();
+    return false;
   });
 });

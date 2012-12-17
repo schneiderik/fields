@@ -73,16 +73,16 @@
               <p>
                 Create a collection of fields.
               </p>
-              <code>> form_one_fields = Fields.in('#form-one')
+              <code>> formOneFields = Fields.in('#form-one')
   <em>Fields</em></code>
             </li>
             <li>
               <p>
                 Use the collection to interact with the form.
               <p>
-              <code>> form_one_fields.isValid
+              <code>> formOneFields.isValid()
   <em>false</em>
-> email = form_one_fields.get('email_field')
+> email = formOneFields.get('email_field')
   <em>Field</em>
 > email.errors()
   <em>['Invalid Email']</em>
@@ -111,7 +111,7 @@
           </div>
         </div>
 
-        <form id="form-one">
+        <form id="form-one" novalidate>
           <div class="hidden-field">
             <input type="hidden" name="hidden_field" value="This field is hidden"/>
           </div>
@@ -355,13 +355,13 @@
 
             <div class="row">
               <div class="col1">
-                <h5 class="code">isValid</h5>
+                <h5 class="code">isValid()</h5>
                 <p>
                   Boolean that is true when all of the collection's models are valid.
                 </p>
               </div>
               <div class="col2">
-                <code>> Fields.in('#form-one').isValid
+                <code>> Fields.in('#form-one').isValid()
   <em>false</em></code>
               </div>
             </div>
@@ -502,39 +502,39 @@
 
             <div class="row">
               <div class="col1">
-                <h5 class="code">isValid</h5>
+                <h5 class="code">isValid()</h5>
                 <p>
                   Returns false if there are any evaluations with context 'errors', or if the field is both required and empty.
                 </p>
               </div>
               <div class="col2">
-                <code>> email.isValid
+                <code>> email.isValid()
   <em>false</em></code>
               </div>
             </div>
 
             <div class="row">
               <div class="col1">
-                <h5 class="code">isRequired</h5>
+                <h5 class="code">isRequired()</h5>
                 <p>
                   Convenience for <span class="code">email.get('required')</span>.
                 </p>
               </div>
               <div class="col2">
-                <code>> email.isRequired
+                <code>> email.isRequired()
   <em>true</em></code>
               </div>
             </div>
 
             <div class="row">
               <div class="col1">
-                <h5 class="code">isEmpty</h5>
+                <h5 class="code">isEmpty()</h5>
                 <p>
                   Convenience for <span class="code">email.val() == ''</span>.
                 </p>
               </div>
               <div class="col2">
-                <code>> email.isEmpty
+                <code>> email.isEmpty()
   <em>false</em></code>
               </div>
             </div>
