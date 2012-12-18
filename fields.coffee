@@ -329,8 +329,8 @@ class Fields extends Events
     @trackValidity()
 
     for name, model of @models
-      model.on 'change:value', (e)=>
-        @trigger 'change:value'
+      model.on 'change:value', (e, value)=>
+        @trigger 'change:value', e.get('name'), value
 
     return @
 
