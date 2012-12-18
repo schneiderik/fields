@@ -52,6 +52,11 @@ $(function(){
     $('#form-one-valid').text(fields.isValid());
   });
 
+  $('#clear-form-one').click(function(e){
+    e.preventDefault()
+    fields.clear()
+  });
+
   $('#form-one').submit(function(e){
     e.preventDefault();
     return false;
