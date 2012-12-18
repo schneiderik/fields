@@ -166,6 +166,7 @@ class Field extends Events
     @evaluate()
 
   isEmpty: ()->
+    return true if @val() is undefined
     return true if @val().length is 0
     return true if @val() is []
     return false
@@ -326,6 +327,7 @@ class Fields extends Events
   constructor: (selector='body')->
     @fields = 'input:not([type="submit"]), select, textarea'
     @el = $(selector)
+    @attributes = {}
     @generateModels()
     @trackValidity()
 
@@ -358,10 +360,12 @@ class Fields extends Events
 
   # Update the collections validity whenever one of its models validity changes
   trackValidity: ()->
-    oldValidity = @isValid()
-
+    @attributes.valid = @isValid()
+    
     for name, model of @models
       model.on 'change:valid', (e)=>
+        oldValidity = @attributes.valid
+        @attributes.valid = @isValid()
         @trigger('change:valid', @, @isValid()) if @isValid() isnt oldValidity
 
   generateModels: ()->

@@ -156,6 +156,9 @@
     };
 
     Field.prototype.isEmpty = function() {
+      if (this.val() === void 0) {
+        return true;
+      }
       if (this.val().length === 0) {
         return true;
       }
@@ -405,6 +408,7 @@
       }
       this.fields = 'input:not([type="submit"]), select, textarea';
       this.el = $(selector);
+      this.attributes = {};
       this.generateModels();
       this.trackValidity();
       _ref = this.models;
@@ -456,14 +460,17 @@
     };
 
     Fields.prototype.trackValidity = function() {
-      var model, name, oldValidity, _ref, _results,
+      var model, name, _ref, _results,
         _this = this;
-      oldValidity = this.isValid();
+      this.attributes.valid = this.isValid();
       _ref = this.models;
       _results = [];
       for (name in _ref) {
         model = _ref[name];
         _results.push(model.on('change:valid', function(e) {
+          var oldValidity;
+          oldValidity = _this.attributes.valid;
+          _this.attributes.valid = _this.isValid();
           if (_this.isValid() !== oldValidity) {
             return _this.trigger('change:valid', _this, _this.isValid());
           }
