@@ -411,8 +411,8 @@
       _ref = this.models;
       for (name in _ref) {
         model = _ref[name];
-        model.on('change:value', function(e) {
-          return _this.trigger('change:value');
+        model.on('change:value', function(e, value) {
+          return _this.trigger('change:value', e.get('name'), value);
         });
       }
       return this;
