@@ -136,7 +136,7 @@
         }
         return _this.value(_this.getFieldValueFromDOM());
       });
-      this.on('change:value', function(value) {
+      this.on('change:value', function(model, value) {
         _this.attributes.empty = _this.isEmpty();
         return _this.evaluate();
       });
@@ -203,8 +203,7 @@
     };
 
     Field.prototype.clear = function() {
-      this.value('');
-      return this;
+      return this.value('');
     };
 
     Field.prototype.errors = function() {
@@ -216,15 +215,13 @@
     };
 
     Field.prototype.evaluate = function() {
-      var oldValidity;
-      oldValidity = this.isValid();
       this.attributes.evaluations = {};
       if (this.isRequired() && this.isEmpty()) {
         this.attributes.evaluations.errors = ['Field required'];
       } else {
         $.extend(this.attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(this.el));
       }
-      if (oldValidity !== this.isValid()) {
+      if (this.isValid() !== this.get('valid')) {
         this.trigger('change:valid', this, this.isValid());
       }
       this.attributes.valid = this.isValid();
@@ -467,13 +464,11 @@
       _results = [];
       for (name in _ref) {
         model = _ref[name];
-        _results.push(model.on('change:valid', function(e) {
-          var oldValidity;
-          oldValidity = _this.attributes.valid;
-          _this.attributes.valid = _this.isValid();
-          if (_this.isValid() !== oldValidity) {
-            return _this.trigger('change:valid', _this, _this.isValid());
+        _results.push(model.on('change:valid', function(e, value) {
+          if (_this.isValid() !== _this.attributes.valid) {
+            _this.trigger('change:valid', _this, _this.isValid());
           }
+          return _this.attributes.valid = _this.isValid();
         }));
       }
       return _results;

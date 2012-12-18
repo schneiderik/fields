@@ -148,7 +148,7 @@ class Field extends Events
       @value @getFieldValueFromDOM()
 
     # Evaluate the field for any errors, warnings, etc. when the value changes
-    @on 'change:value', (value)=>
+    @on 'change:value', (model, value)=>
       @attributes.empty = @isEmpty()
       @evaluate()
 
@@ -199,8 +199,6 @@ class Field extends Events
   clear: ->
     @value ''
 
-    return @
-
   errors: ->
     if @get('evaluations').errors?
       return @get('evaluations').errors
@@ -210,15 +208,14 @@ class Field extends Events
   # Evaluate the field against evaluations stored in the evaluationRegistry and
   # return an object of any results keyed on the context of the evaluation. i.e. 'errors'
   evaluate: ->
-    oldValidity = @isValid()
     @attributes.evaluations = {}
     if @isRequired() and @isEmpty()
       @attributes.evaluations.errors = ['Field required']
     else
       $.extend @attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(@el)
-
+      
     # Trigger event if validity changes
-    @trigger('change:valid', @, @isValid()) if oldValidity isnt @isValid()
+    @trigger('change:valid', @, @isValid()) unless @isValid() is @get('valid')
 
     # A field is valid if it has no errors.
     @attributes.valid = @isValid()
@@ -363,10 +360,9 @@ class Fields extends Events
     @attributes.valid = @isValid()
     
     for name, model of @models
-      model.on 'change:valid', (e)=>
-        oldValidity = @attributes.valid
+      model.on 'change:valid', (e, value)=>
+        @trigger('change:valid', @, @isValid()) if @isValid() isnt @attributes.valid
         @attributes.valid = @isValid()
-        @trigger('change:valid', @, @isValid()) if @isValid() isnt oldValidity
 
   generateModels: ()->
     @models = {}
