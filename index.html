@@ -43,13 +43,17 @@
           <h2>How to Use</h2>
         </header>
 
-        <div class="col1">
-          <ol class="spaced-list-items">
-            <li>
-              <p>
-                Add evaluations to FieldsUtils.evaluationRegistry.
-              </p>
-              <code>> FieldsUtils.evaluationRegistry.add({
+        <div class="row">
+          <div class="col1">
+            <p>
+              1. Add any evaluations to the evaluationRegistry
+            </p>
+            <p class="note">
+              <span class="highlight">NOTE</span> As the user interacts with fields in the DOM, those fields will be evaluated by any evaluations with a selector that matches the field being interacted with.
+            </p>
+            </div>
+          <div class="col2">
+            <code>> FieldsUtils.evaluationRegistry.add({
     context: 'errors',
     selector: '[type="email"], 
     statement: function(field){
@@ -59,28 +63,29 @@
     }
   });
   <em>EvaluationCollection</em></code>
-              <p>
-                As the user interacts with fields in the DOM, those fields will be evaluated by any evaluations with a selector that matches the field being interacted with.
-              </p>
-              <p>
-                Fields that return evaluations of the context 'errors', or that are required and blank, are considered not valid.
-            </li>
-          </ol>
+          </div>
         </div>
-        <div class="col2">
-          <ol class="spaced-list-items" start="2">
-            <li>
-              <p>
-                Create a collection of fields.
-              </p>
-              <code>> formOneFields = Fields.in('#form-one')
+
+        <div class="row">
+          <div class="col1">
+            <p>
+              2. Create a collection of fields.
+            </p>
+          </div>
+          <div class="col2">
+            <code>> formOneFields = Fields.in('#form-one')
   <em>Fields</em></code>
-            </li>
-            <li>
-              <p>
-                Use the collection to interact with the form.
-              <p>
-              <code>> formOneFields.isValid()
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col1">
+            <p>
+              3. Use the collection to interact with the form.
+            </p>
+          </div>
+          <div class="col2">
+            <code>> formOneFields.isValid()
   <em>false</em>
 > email = formOneFields.get('email_field')
   <em>Field</em>
@@ -89,12 +94,9 @@
 > email.on('change:valid', function(val){
     doSomething(val)
   });</code>
-            </li>
-          </ol>
-          <p>
-            The tool currently does not contain a method of displaying errors and other evaluation results. For the time being, it is up to the implementer.
-          </p>
+          </div>
         </div>
+
       </section>
 
       <section id="example" class="row">
@@ -107,6 +109,13 @@
           <div class="centered-col">
             <p>
               As an example, this set of fields is an instance of <span class="code">Fields.in('#form-one')</span>. There is also one 'errors' context evaluation added to the registry for email validation.
+            </p>
+            <p class="note">
+              <span class="highlight">NOTE</span> The tool currently does not contain a method of displaying errors and other evaluation results. For the time being, it is up to the implementer.
+            </p>
+
+            <p class="note">
+              <span class="highlight">NOTE</span> Fields that return evaluations of the context 'errors', or that are required and blank, are considered not valid.
             </p>
           </div>
         </div>
@@ -134,7 +143,7 @@
           <div class="field">
             <div class="col1">
               <label for="email_field">Email field:</label>
-              <input type="email" name="email_field" value="example@emailcom" required/>
+              <input type="email" name="email_field" required/>
             </div>
             <div class="col2">
               <ul>
@@ -149,6 +158,7 @@
             <div class="col1">
               <label for="select_field">Select field:</label>
               <select name="select_field" required>
+                <option value=''>Select Something!</option>
                 <option value="1">One</option>
                 <option value="2">Two</option>
                 <option value="3">Three</option>
@@ -168,7 +178,7 @@
               <label for="radio_field">Radio field:</label>
               <div class="radio-group">
                 <label>
-                  <input type="radio" name="radio_field" value="1" checked required>
+                  <input type="radio" name="radio_field" value="1" required>
                   One
                 </label>
                 <label>
@@ -216,7 +226,7 @@
           <div class="field">
             <div class="col1">
               <label for="textarea_field">Textarea field:</label>
-              <textarea name="textarea_field" required>This is example text that is in a textarea.</textarea>
+              <textarea name="textarea_field" required></textarea>
             </div>
             <div class="col2">
               <ul>

@@ -28,7 +28,7 @@ body {
 
 .row:last-child { padding-bottom: 0px; }
 
-#main-section > .row > .row {
+#main-section > .row > section.row {
   padding-bottom: 110px;
 }
 
@@ -189,7 +189,7 @@ p.subtitle {
 }
 
 .muted {
-  color: #CCC;
+  color: #AAA;
 }
 
 .highlight {
@@ -201,6 +201,11 @@ p.subtitle {
 .todo {
   text-indent: -55px;
   padding-left: 55px;
+}
+
+.note {
+  text-indent: -52px;
+  padding-left: 52px;
 }
 
 header.block-header {
