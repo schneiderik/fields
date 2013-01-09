@@ -145,7 +145,7 @@ class Field extends Events
     # Update attributes when a user interacts with the field
     @parent.find("[name='#{@el.attr('name')}']").on 'keyup blur focus change', (e, options={})=>
       return if options.silent
-      @value @getFieldValueFromDOM()
+      @value @getFieldValueFromDOM(), {silent: true}
 
     # Evaluate the field for any errors, warnings, etc. when the value changes
     @on 'change:value', (model, value)=>
@@ -185,13 +185,13 @@ class Field extends Events
     return @attributes[attr]
 
   # Get value of the field, or set it by passing an argument
-  value: (arg)->
+  value: (arg, options={})->
     return @get('value') unless arg?
     return @get('value') if @get('value') is arg
 
     @attributes.value = arg
     @trigger "change:value", @, arg
-    @updateFieldValueInDOM arg
+    @updateFieldValueInDOM arg unless options.silent
 
     return @
 

@@ -134,7 +134,9 @@
         if (options.silent) {
           return;
         }
-        return _this.value(_this.getFieldValueFromDOM());
+        return _this.value(_this.getFieldValueFromDOM(), {
+          silent: true
+        });
       });
       this.on('change:value', function(model, value) {
         _this.attributes.empty = _this.isEmpty();
@@ -189,7 +191,10 @@
       return this.attributes[attr];
     };
 
-    Field.prototype.value = function(arg) {
+    Field.prototype.value = function(arg, options) {
+      if (options == null) {
+        options = {};
+      }
       if (arg == null) {
         return this.get('value');
       }
@@ -198,7 +203,9 @@
       }
       this.attributes.value = arg;
       this.trigger("change:value", this, arg);
-      this.updateFieldValueInDOM(arg);
+      if (!options.silent) {
+        this.updateFieldValueInDOM(arg);
+      }
       return this;
     };
 
