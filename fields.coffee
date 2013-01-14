@@ -63,7 +63,7 @@ class Events
       getKeys(calls)
 
     # Loop through the callback list, splicing where appropriate.
-    while event = events.shift() 
+    while event = events.shift()
       if !(list = calls[event]) or !(callback or context)
         delete calls[event]
         continue
@@ -213,7 +213,7 @@ class Field extends Events
       @attributes.evaluations.errors = ['Field required']
     else
       $.extend @attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(@el)
-      
+
     # Trigger event if validity changes
     @trigger('change:valid', @, @isValid()) unless @isValid() is @get('valid')
 
@@ -251,7 +251,7 @@ class Field extends Events
 
   updateCheckboxValueInDOM: (values)->
     @parent.find("[name='#{@get('name')}']").attr('checked', false).trigger('change', {silent: true})
-    
+
     for value in values
       break if @notInPossibleValues(value)
       @parent.find("[name='#{@get('name')}'][value='#{value}']").attr('checked', true).trigger('change', {silent: true})
@@ -270,9 +270,9 @@ class Field extends Events
 
 class Evaluation
   constructor: (selector, context, statement)->
-    @selector  = selector      
-    @context   = context      
-    @statement = statement      
+    @selector  = selector
+    @context   = context
+    @statement = statement
 
   evaluate: (field)->
     @statement(field)
@@ -291,9 +291,9 @@ class EvaluationRegistry extends Events
 
       unless result is undefined
         results[evaluation.context] = [] unless results[evaluation.context]?
-        results[evaluation.context].push result 
+        results[evaluation.context].push result
 
-    return results 
+    return results
 
   # Accepts one or an array of evaluation_attribute objects to create new
   # Evaluations and add them to the registry.
@@ -339,7 +339,8 @@ class Fields extends Events
 
   # Convenience method to clear the values of all of the fields in Fields
   clear: ->
-    model.clear() for name, model of @models
+    for name, model of @models
+      model.clear() unless model.el.is(':hidden')
 
     return @
 
@@ -358,7 +359,7 @@ class Fields extends Events
   # Update the collections validity whenever one of its models validity changes
   trackValidity: ()->
     @attributes.valid = @isValid()
-    
+
     for name, model of @models
       model.on 'change:valid', (e, value)=>
         @trigger('change:valid', @, @isValid()) if @isValid() isnt @attributes.valid
@@ -366,7 +367,7 @@ class Fields extends Events
 
   generateModels: ()->
     @models = {}
-    for field in @el.find @fields 
+    for field in @el.find @fields
       unless @models[ $(field).attr('name') ]?
         @models[$(field).attr('name')] = new Field(field, @el)
 
