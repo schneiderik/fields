@@ -434,7 +434,9 @@
       _ref = this.models;
       for (name in _ref) {
         model = _ref[name];
-        model.clear();
+        if (!model.el.is(':hidden')) {
+          model.clear();
+        }
       }
       return this;
     };
