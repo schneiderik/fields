@@ -13,7 +13,6 @@ describe("Hidden fields", function(){
 
   it('should reset non hidden fields', function(){
     fields.clear()
-    console.log(fields.get('email').val());
     assert(fields.get('referrer').val()).equals('contact_us');
     assert(fields.get('email').val()).equals('');
   });

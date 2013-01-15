@@ -1,4 +1,4 @@
-// Generated on:  Mon Jan 14 21:44:11 -0600 2013
+// Generated on:  Mon Jan 14 21:57:50 -0600 2013
 // Compiler: compile-test-suite - v0.0.2
 pavlov.specify("Fields.js Test Suite", function(){
 
@@ -18,7 +18,6 @@ describe("Hidden fields", function(){
 
   it('should reset non hidden fields', function(){
     fields.clear()
-    console.log(fields.get('email').val());
     assert(fields.get('referrer').val()).equals('contact_us');
     assert(fields.get('email').val()).equals('');
   });
