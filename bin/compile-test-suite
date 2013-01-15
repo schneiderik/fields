@@ -1,0 +1,43 @@
+#! /usr/bin/env ruby
+@script_name = File.basename($0)
+@version     = '0.0.2'
+@author      = 'Eduardo Garibay'
+
+def help
+  puts %"
+Author: #{@author}
+Version: #{@version}
+
+Descriprion: Compiles all the different tests into a master test_suite.js file
+Run this file from root
+
+Example:
+  $ ./bin/#{@script_name}
+"
+  exit(0)
+end
+help if ARGV[0] == 'help'
+
+source      = './spec/test_suite'
+destination = './spec/test_suite.js'
+prefix      = %"// Generated on:  #{Time.now}
+// Compiler: #{@script_name} - v#{@version}
+pavlov.specify(\"Fields.js Test Suite\", function(){
+"
+suffix      = "\n});"
+
+puts 'Gathering tests...'
+files = Dir.glob("#{source}/*.js")
+
+puts 'Compiling...'
+File.open(destination, 'w') do |file|
+  file.write(prefix)
+  files.each do |src|
+    test = File.open(src)
+    file.write("\n//#{src}\n")
+    file.write(test.read)
+  end
+  file.write(suffix)
+end
+
+puts 'All set!'
