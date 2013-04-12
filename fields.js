@@ -223,10 +223,12 @@
 
     Field.prototype.evaluate = function() {
       this.attributes.evaluations = {};
-      if (this.isRequired() && this.isEmpty()) {
-        this.attributes.evaluations.errors = ['Field required'];
-      } else {
-        $.extend(this.attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(this.el));
+      if (this.isRequired() && this.el.is(':visible')) {
+        if (this.isEmpty()) {
+          this.attributes.evaluations.errors = ['Field required'];
+        } else {
+          $.extend(this.attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(this.el));
+        }
       }
       if (this.isValid() !== this.get('valid')) {
         this.trigger('change:valid', this, this.isValid());

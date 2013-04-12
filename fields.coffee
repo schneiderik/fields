@@ -209,10 +209,11 @@ class Field extends Events
   # return an object of any results keyed on the context of the evaluation. i.e. 'errors'
   evaluate: ->
     @attributes.evaluations = {}
-    if @isRequired() and @isEmpty()
-      @attributes.evaluations.errors = ['Field required']
-    else
-      $.extend @attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(@el)
+    if @isRequired() and @el.is(':visible')
+      if @isEmpty()
+        @attributes.evaluations.errors = ['Field required']
+      else
+        $.extend @attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(@el)
 
     # Trigger event if validity changes
     @trigger('change:valid', @, @isValid()) unless @isValid() is @get('valid')
