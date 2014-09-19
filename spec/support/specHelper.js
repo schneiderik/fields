@@ -2,16 +2,19 @@ function setupForm() {
   var input = document.createElement('input');
       input.type = 'text';
       input.name = 'input';
+  var input2 = document.createElement('input');
+      input2.type = 'text';
+      input2.name = 'input2';
   var textarea = document.createElement('textarea');
       textarea.name = 'textarea';
   var checkbox1 = document.createElement('input');
       checkbox1.type = 'checkbox';
       checkbox1.name = 'checkbox';
-      checkbox1.value = '1'
+      checkbox1.value = '1';
   var checkbox2 = document.createElement('input');
       checkbox2.type = 'checkbox';
       checkbox2.name = 'checkbox';
-      checkbox2.value = '2'
+      checkbox2.value = '2';
   var select = document.createElement('select');
       select.name = 'select';
   var option1 = document.createElement('option');
@@ -28,6 +31,7 @@ function setupForm() {
 
   document.body.appendChild(form);
   form.appendChild(input);
+  form.appendChild(input2);
   form.appendChild(select);
   select.appendChild(option1);
   select.appendChild(option2);
@@ -38,6 +42,12 @@ function setupForm() {
   form.appendChild(submit);
 };
 
+function teardownForm() {
+  var form = document.querySelector('form');
+  form.parentNode.removeChild(form);
+};
+
 module.exports = {
-  setupForm: setupForm
+  setupForm: setupForm,
+  teardownForm: teardownForm
 }

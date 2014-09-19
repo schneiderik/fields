@@ -1,10 +1,22 @@
-var Field = (function() {
-  function Field() {};
+var util = require('./helpers/util');
 
-  Field.prototype.isValid = function() {
-    return false;
-  };
+function Field (el) {
+  this.el = util.isNodeList(el) ? util.nodeListToArray(el) : el;
+  this.name = util.isArray(el) ? el[0].name : el.name;
+};
 
-})();
+Field.prototype.isValid = function () {
+  return false;
+};
 
-module.exports = Field
+Field.prototype.addElement = function (el) {
+  if (util.isNodeList(el)) {
+    el = util.nodeListToArray(el);
+  }
+
+  this.el = util.toUniqueArray(this.el, el);
+
+  return this.el;
+}
+
+module.exports = Field;

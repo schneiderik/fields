@@ -1,3 +1,4 @@
+var util = require('./helpers/util');
 var Field = require('./field');
 
 function Fields (selector) {
@@ -8,13 +9,38 @@ function Fields (selector) {
 };
 
 Fields.prototype.initialize = function () {
-  var fields = Array.prototype.slice.call(this.el.querySelectorAll('input, select, textarea'));
-  var fieldLength = fields.length;
+  var elements = util.nodeListToArray(this.el.querySelectorAll('input, select, textarea'));
+  var elementsLength = elements.length;
 
-  for (var i = 0; i < fieldLength; i++) {
-    if (fields[i].name && this.models.indexOf(fields[i].name) === -1) {
-      this.models.push(fields[i].name);
+  if (this.el.name) {
+    this.models.push(new Field(this.el));
+  }
+
+  for (var i = 0; i < elementsLength; i++) {
+    var field = elements[i];
+    var name = field.name;
+
+    if (name) {
+      if (this.get(name)) {
+        this.get(name).addElement(field);
+      } else {
+        this.models.push(new Field(field));
+      }
     }
+  }
+}
+
+Fields.prototype.get = function (name) {
+  var modelNames = this.models.map( function (model, index) {
+    return model.name;
+  });
+
+  var modelIndex = modelNames.indexOf(name);
+
+  if (modelIndex === -1) {
+    return null;
+  } else {
+    return this.models[modelIndex];
   }
 }
 
@@ -22,4 +48,4 @@ Fields.addValidation = function (selector, validation) {
 
 }
 
-module.exports = Fields
+module.exports = Fields;
