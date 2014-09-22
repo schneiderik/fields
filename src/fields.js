@@ -1,14 +1,35 @@
 var util = require('./helpers/util');
 var Field = require('./field');
 
-function Fields (selector) {
+function Fields (selector, validations) {
   this.el = selector ? document.querySelector(selector) : document;
   this.models = [];
+  this.validations = this.defaultValidations;
 
-  this.initialize();
+  this._createValidations()
+  this._createFields();
 };
 
-Fields.prototype.initialize = function () {
+Fields.defaultValidations = {
+  'input, select, textarea': function (field) {
+    if (field.isRequired() && !field.hasValue()) {
+      return 'Required field';
+    }
+  },
+  '[type="email"]': function (field) {
+    if (!emailRegex.match(field.value())) {
+      return 'Invalid Email';
+    }
+  }
+}
+
+Fields.prototype._createValidations = function () {
+  for (selector in this.validations) {
+    this.addValidation(selector, this.validations[selector]);
+  }
+}
+
+Fields.prototype._createFields = function () {
   var elements = util.nodeListToArray(this.el.querySelectorAll('input, select, textarea'));
   var elementsLength = elements.length;
 
@@ -24,7 +45,7 @@ Fields.prototype.initialize = function () {
       if (this.get(name)) {
         this.get(name).addElement(field);
       } else {
-        this.models.push(new Field(field));
+        this.models.push(new Field(field, this));
       }
     }
   }
@@ -44,8 +65,8 @@ Fields.prototype.get = function (name) {
   }
 }
 
-Fields.addValidation = function (selector, validation) {
-
+Fields.addValidation = function (selector, validation, run) {
+  this.validations[selector] = validation
 }
 
 module.exports = Fields;

@@ -2,14 +2,37 @@
 var util = _dereq_('./helpers/util');
 var Field = _dereq_('./field');
 
-function Fields (selector) {
+function Fields (selector, validations) {
   this.el = selector ? document.querySelector(selector) : document;
   this.models = [];
+  this.validations = this.defaultValidations;
 
-  this.initialize();
+  this._createValidations(validations)
+  this._createFields();
 };
 
-Fields.prototype.initialize = function () {
+Fields.defaultValidations = {
+  'input, select, textarea': function (field) {
+    if (field.isRequired() && !field.hasValue()) {
+      return 'Required field';
+    }
+  },
+  '[type="email"]': function (field) {
+    if (!emailRegex.match(field.value())) {
+      return 'Invalid Email';
+    }
+  }
+}
+
+Fields.prototype._createValidations = function () {
+  var validationsLength = this.validations.length;
+
+  for (var i = 0; i < validationsLength; i++) {
+    this.addValidation(this.validations[i]);
+  }
+}
+
+Fields.prototype._createFields = function () {
   var elements = util.nodeListToArray(this.el.querySelectorAll('input, select, textarea'));
   var elementsLength = elements.length;
 
@@ -25,7 +48,7 @@ Fields.prototype.initialize = function () {
       if (this.get(name)) {
         this.get(name).addElement(field);
       } else {
-        this.models.push(new Field(field));
+        this.models.push(new Field(field, this));
       }
     }
   }
@@ -46,17 +69,23 @@ Fields.prototype.get = function (name) {
 }
 
 Fields.addValidation = function (selector, validation) {
-
+  this.validations[selector] = validation
 }
 
 module.exports = Fields;
 
 },{"./field":2,"./helpers/util":3}],2:[function(_dereq_,module,exports){
+var validationRegistry = ('./validationRegistry');
 var util = _dereq_('./helpers/util');
 
-function Field (el) {
+function Field (el, validationRegistry) {
   this.el = util.isNodeList(el) ? util.nodeListToArray(el) : el;
   this.name = util.isArray(el) ? el[0].name : el.name;
+  this.errors = [];
+  this.valid = true;
+  this.validationRegistry = validationRegistry;
+
+  this.validate();
 };
 
 Field.prototype.isValid = function () {
@@ -71,6 +100,9 @@ Field.prototype.addElement = function (el) {
   this.el = util.toUniqueArray(this.el, el);
 
   return this.el;
+}
+
+Field.prototype.validate = function() {
 }
 
 module.exports = Field;
