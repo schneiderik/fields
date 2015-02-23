@@ -10,6 +10,12 @@ function nodeListToArray (obj) {
   return Array.prototype.slice.call(obj);
 }
 
+function bind (func, context) {
+  return function () {
+    func.apply(context);
+  };
+}
+
 function uniqueArray(array) {
   var a = array.concat();
   for (var i = 0; i < a.length; ++i) {
@@ -50,5 +56,6 @@ module.exports = {
   isArray: isArray,
   nodeListToArray: nodeListToArray,
   uniqueArray: uniqueArray,
-  toUniqueArray: toUniqueArray
+  toUniqueArray: toUniqueArray,
+  bind: bind
 }

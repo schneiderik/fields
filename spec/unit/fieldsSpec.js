@@ -98,10 +98,14 @@ describe('Fields', function () {
       expect(fields.isValid()).toBe(false);
     });
 
-    it( 'returns true if the validity of all of its child Field objects are valid', function () {
+    it( 'returns true if the validity of all of its child Field objects are valid', function (done) {
       var fields = new Fields();
       fields.get('email').el.value = 'example@email.com';
-      expect(fields.isValid()).toBe(true);
+
+      setTimeout(function () {
+        expect(fields.isValid()).toBe(true);
+        done();
+      }, 1000)
     });
   });
 });

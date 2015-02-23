@@ -1,16 +1,16 @@
-function requiredValidation (el) {
+function requiredValidation (el, callback) {
   var isRequired = el.hasAttribute('required') && !!this.el.getAttribute('required');
   var hasValue = !!el.value;
-  if (isRequired && !hasValue) {
-    return 'Required field';
-  }
+  var valid = isRequired && hasValue;
+
+  callback('Required field', valid);
 }
 
-function emailValidation (el) {
+function emailValidation (el, callback) {
   var emailRegex = /^[A-Za-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?/;
-  if (!emailRegex.test(el.value)) {
-    return 'Invalid Email';
-  }
+  var valid = emailRegex.test(el.value);
+
+  callback('Invalid Email', valid);
 }
 
 module.exports = {
