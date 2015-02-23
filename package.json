@@ -3,7 +3,9 @@
   "version": "2.0.0",
   "description": "Field Validator",
   "main": "fields.js",
-  "dependencies": {},
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start --single-run"
+  },
   "devDependencies": {
     "gulp": "^3.8.7",
     "gulp-gzip": "0.0.5",

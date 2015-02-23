@@ -5,6 +5,9 @@ function setupForm() {
   var input2 = document.createElement('input');
       input2.type = 'text';
       input2.name = 'input2';
+  var email = document.createElement('input');
+      email.type = 'email';
+      email.name = 'email';
   var textarea = document.createElement('textarea');
       textarea.name = 'textarea';
   var checkbox1 = document.createElement('input');
@@ -32,6 +35,7 @@ function setupForm() {
   document.body.appendChild(form);
   form.appendChild(input);
   form.appendChild(input2);
+  form.appendChild(email);
   form.appendChild(select);
   select.appendChild(option1);
   select.appendChild(option2);

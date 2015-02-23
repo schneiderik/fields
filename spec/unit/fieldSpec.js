@@ -1,7 +1,8 @@
+var validations = require('../../src/validations');
 var Field = require('../../src/field');
 var helpers = require('../support/specHelper');
 
-describe( 'Field', function () {
+describe('Field', function () {
 
   beforeEach(function () {
     helpers.setupForm();
@@ -11,27 +12,38 @@ describe( 'Field', function () {
     helpers.teardownForm();
   });
 
-  describe( 'el', function () {
-    it( 'references a DOM element', function () {
+  describe('el', function () {
+    it('references a DOM element', function () {
       var input = document.querySelector('[name="input"]');
-      var field = new Field(input);
+      var field = new Field(input, {
+        el: document.body
+      });
+
       expect(field.el).toEqual(input);
     });
 
-    it( 'becomes an array of all DOM elements with the same [name] attribute', function () {
+    it('becomes an array of all DOM elements with the same [name] attribute', function () {
       var checkboxes = document.querySelectorAll('[name="checkbox"]');
-      var field = new Field(checkboxes);
+      var field = new Field(checkboxes, {
+        el: document.body
+      });
+
       expect(field.el).toEqual(Array.prototype.slice.call(checkboxes));
     });
   });
 
-  describe( 'errors', function () {
-    it( 'an array of errors currently validated on the model', function () {
-    });
-  });
+  describe('isValid', function () {
+    it('returns a boolean based on the presence of error in the errors property', function () {
+      var email = document.querySelector('[name="email"]');
+      email.value = 'foobar';
+      var field = new Field(email, {
+        el: document.body,
+        validations: {
+          '[type="email"]': validations.email
+        }
+      });
 
-  describe( 'valid', function () {
-    it( 'a boolean based on presence of errors', function () {
+      expect(field.isValid()).toBe(false);
     });
   });
 

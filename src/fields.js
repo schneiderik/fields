@@ -1,40 +1,45 @@
 var util = require('./helpers/util');
+var validations = require('./validations');
 var Field = require('./field');
 
-function Fields (selector, validations) {
-  this.el = selector ? document.querySelector(selector) : document;
-  this.models = [];
-  this.validations = this.defaultValidations;
+function Fields (selector, options) {
+  if (typeof selector === 'object') {
+    options = selector;
+    selector = null;
+  }
 
-  this._createValidations()
+  this.options = options || {};
+  this.el = selector ? document.querySelector(selector) : document.body;
+  this.models = [];
+  this.validations = Object.create(Fields.defaultValidations);
+
+  this.addValidations(this.options.validations);
   this._createFields();
-};
+}
 
 Fields.defaultValidations = {
-  'input, select, textarea': function (field) {
-    if (field.isRequired() && !field.hasValue()) {
-      return 'Required field';
-    }
-  },
-  '[type="email"]': function (field) {
-    if (!emailRegex.match(field.value())) {
-      return 'Invalid Email';
-    }
-  }
-}
+  'input, select, textarea': validations.required,
+  '[type="email"]': validations.email
+};
 
-Fields.prototype._createValidations = function () {
-  for (selector in this.validations) {
-    this.addValidation(selector, this.validations[selector]);
+Fields.prototype.addValidations = function (validations) {
+  for (selector in validations) {
+    if (validations.hasOwnProperty(selector)) {
+      this.addValidation(selector, validations[selector]);
+    }
   }
-}
+};
+
+Fields.prototype.addValidation = function (selector, validationFunc) {
+  this.validations[selector] = validationFunc;
+};
 
 Fields.prototype._createFields = function () {
   var elements = util.nodeListToArray(this.el.querySelectorAll('input, select, textarea'));
   var elementsLength = elements.length;
 
   if (this.el.name) {
-    this.models.push(new Field(this.el));
+    this.models.push(new Field(this.el, this));
   }
 
   for (var i = 0; i < elementsLength; i++) {
@@ -49,7 +54,7 @@ Fields.prototype._createFields = function () {
       }
     }
   }
-}
+};
 
 Fields.prototype.get = function (name) {
   var modelNames = this.models.map( function (model, index) {
@@ -63,10 +68,19 @@ Fields.prototype.get = function (name) {
   } else {
     return this.models[modelIndex];
   }
-}
+};
 
-Fields.addValidation = function (selector, validation, run) {
-  this.validations[selector] = validation
-}
+Fields.prototype.isValid = function () {
+  var valid = true;
+  var modelsLength = this.models.length;
+
+  for (var i = 0; i < modelsLength; i++) {
+    if (this.models[i].isValid() === false) {
+      valid = false;
+    }
+  }
+
+  return valid;
+};
 
 module.exports = Fields;
