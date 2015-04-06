@@ -33,7 +33,7 @@ describe('Field', function () {
   });
 
   describe('isValid', function () {
-    it('returns a boolean based on the presence of error in the errors property', function () {
+    it('returns a false if there is an error in the errors property', function () {
       var email = document.querySelector('[name="email"]');
       email.value = 'foobar';
       var field = new Field(email, {
@@ -44,6 +44,34 @@ describe('Field', function () {
       });
 
       expect(field.isValid()).toBe(false);
+    });
+
+    xit('returns a false if a validation has not resolved', function () {
+      var email = document.querySelector('[name="email"]');
+      email.value = 'foobar';
+      var field = new Field(email, {
+        el: document.body,
+        validations: {
+          '[type="email"]': validations.email
+        }
+      });
+
+      expect(field.isValid()).toBe(false);
+    });
+
+    it('returns a true if there are no errors in the errors property', function () {
+      var email = document.querySelector('[name="email"]');
+      email.value = 'foobar@example.com';
+      var field = new Field(email, {
+        el: document.body,
+        validations: {
+          '[type="email"]': validations.email
+        }
+      });
+
+      console.log(field.validating, field.errors);
+
+      expect(field.isValid()).toBe(true);
     });
   });
 

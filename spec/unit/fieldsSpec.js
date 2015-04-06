@@ -1,7 +1,7 @@
 var Fields = require('../../src/fields');
 var helpers = require('../support/specHelper');
 
-describe('Fields', function () {
+ddescribe('Fields', function () {
   beforeEach(function () {
     helpers.setupForm();
   });
@@ -16,16 +16,16 @@ describe('Fields', function () {
       var checkboxes = document.querySelectorAll('[name="checkbox"]');
 
       expect(fields.models.length).toEqual(6);
-      expect(fields.get('input').el)
-        .toEqual(document.querySelector('[name="input"]'));
-      expect(fields.get('input2').el)
-        .toEqual(document.querySelector('[name="input2"]'));
-      expect(fields.get('checkbox').el)
+      expect(fields.get('input').elements)
+        .toEqual([document.querySelector('[name="input"]')]);
+      expect(fields.get('input2').elements)
+        .toEqual([document.querySelector('[name="input2"]')]);
+      expect(fields.get('checkbox').elements)
         .toEqual(Array.prototype.slice.call(checkboxes));
-      expect(fields.get('select').el)
-        .toEqual(document.querySelector('[name="select"]'));
-      expect(fields.get('textarea').el)
-        .toEqual(document.querySelector('[name="textarea"]'));
+      expect(fields.get('select').elements)
+        .toEqual([document.querySelector('[name="select"]')]);
+      expect(fields.get('textarea').elements)
+        .toEqual([document.querySelector('[name="textarea"]')]);
     });
 
     it('populates the models array with Field objects for all uniquely named inputs, textareas, and selects within the provided selector if the first argument is a string', function () {
@@ -34,50 +34,50 @@ describe('Fields', function () {
       var fields = new Fields('#scoped');
 
       expect(fields.models.length).toEqual(2);
-      expect(fields.get('checkbox').el)
+      expect(fields.get('checkbox').elements)
         .toEqual(Array.prototype.slice.call(checkboxes));
-      expect(fields.get('textarea').el)
-        .toEqual(document.querySelector('[name="textarea"]'));
+      expect(fields.get('textarea').elements)
+        .toEqual([document.querySelector('[name="textarea"]')]);
     });
 
     it('adds validations to the validations property if the first argument is an object', function () {
       var fields = new Fields({
         validations: {
-          '[name="input"]': function () {
-            if (true) {
-              return 'Example validation';
+          input: [
+            function () {
+              if (true) {
+                return 'Example validation';
+              }
             }
-          }
+          ]
         }
       });
 
-      expect(fields.validations['[name="input"]']).toBeDefined();
+      expect(fields.validations.input).toBeDefined();
     });
 
     it('adds validations to the validations property if the first argument is a string but the second is an object', function () {
       var fields = new Fields('#scoped', {
         validations: {
-          '[name="input"]': function () {
-            if (true) {
-              return 'Example validation';
+          input: [
+            function () {
+              if (true) {
+                return 'Example validation';
+              }
             }
-          }
+          ]
         }
       });
 
-      expect(fields.validations['[name="input"]']).toBeDefined();
+      expect(fields.validations.input).toBeDefined();
     });
   });
 
-  describe( '.addValidation', function () {
-    it( 'adds a validation keyed on a selector string', function () {
+  describe( '._addValidation', function () {
+    it( 'adds a validation keyed on a field name', function () {
       var fields = new Fields();
 
-      fields.addValidation('[name="input"]', function () {
-        if (true) {
-          return 'Example validation';
-        }
-      });
+      fields.addValidation('input', function () {});
 
       expect(fields.validations['[name="input"]']).toBeDefined();
     });

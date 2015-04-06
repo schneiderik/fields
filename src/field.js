@@ -1,11 +1,10 @@
 var validationRegistry = ('./validationRegistry');
 var util = require('./helpers/util');
 
-function Field (el, parent) {
-  this.el = util.isNodeList(el) ? util.nodeListToArray(el) : el;
-  this.name = util.isArray(el) ? el[0].name : el.name;
-  this.parent = parent;
-  this.validations = parent.validations ? parent.validations : {};
+function Field (elements, options) {
+  this.elements = util.isNodeList(elements) ? util.nodeListToArray(elements) : elements;
+  this.name = elements[0].name;
+  this.validations = options.validations ? options.validations : [];
   this.errors = [];
   this.validating = false;
 
@@ -13,43 +12,92 @@ function Field (el, parent) {
 };
 
 Field.prototype.isValid = function () {
-  if (this.validating) {
-    return false;
-  }
+  this.updateErrors(options.validatingMessage, this.validating);
 
   return this.errors.length === 0;
 };
 
-Field.prototype.addElement = function (el) {
-  if (util.isNodeList(el)) {
-    el = util.nodeListToArray(el);
+Field.prototype.isRequired = function () {
+  var required = false;
+  var elementsLength = this.elements.length;
+
+  for (var i = 0; i < elementsLength; i++) {
+    var element = this.elements[i];
+    if (element.hasAttribute('required') && !!element.getAttribute('required')) {
+      require = true;
+      break;
+    }
+  }
+}
+
+Field.prototype.value = function () {
+  var values = [];
+  var radioInputs = [];
+  var checkboxInputs = [];
+  var elementsLength = this.elements.length;
+
+  for (var i = 0; i < elementsLength; i++) {
+    var element = this.elements[i];
+
+    if (element.type === 'radio') {
+      radioInputs.push(element);
+    } else if (element.type === 'checkbox') {
+      checkboxInputs.push(element);
+    } else if (element.tagName.toLowerCase() === 'select' && element.multiple) {
+      var options = util.nodeListToArray(element.querySelectorAll('option'));
+      var optionsLength = options.length;
+
+      for (var i = 0; i < optionsLength; i++) {
+        var option = options[i];
+        if (option.selected) {
+          var value = option.value || option.text;
+          values.push(value);
+        }
+      }
+    } else {
+      values.push(element.value);
+    }
   }
 
-  this.el = util.toUniqueArray(this.el, el);
+  if (radioInputs.length) {
+    var inputLength = radioInputs.length;
 
-  return this.el;
-}
+    for (var i = 0; i < inputLength; i++) {
+      var input = radioInputs[i];
+
+      if (input.checked) {
+        values.push(input.value);
+        break;
+      }
+    }
+  }
+
+  if (checkboxInputs.length) {
+    var inputLength = checkboxInputs.length;
+
+    for (var i = 0; i < inputLength; i++) {
+      var input = checkboxInputs[i];
+      if (input.checked) {
+        values.push(input.value);
+      }
+    }
+  }
+
+  return values;
+};
 
 Field.prototype.validate = function () {
   this.validating = true
 
-  for (selector in this.validations) {
-    var selectedElements = util.nodeListToArray(this.parent.el.querySelectorAll(selector));
-    var selectedElementsLength = selectedElements.length;
+  if (this.isRequired() && !this.value().length) {
+    this.updateErrors(options.requiredMessage, this.validating);
+  } else if (this.value().length) {
+    var validationsLength = this.validations.length;
 
-    for (var i = 0; i < selectedElementsLength; i++) {
-      if (util.isArray(this.el)) {
-        elementsLength = this.el.length;
-        for (var ii = 0; ii < elementsLength; ii++) {
-          if (selectedElements.indexOf(this.el[ii]) !== -1) {
-            this.validations[selector](this.el[ii], util.bind(this.updateErrors, this));
-          }
-        }
-      } else {
-        if (selectedElements.indexOf(this.el) !== -1) {
-          this.validations[selector](this.el, util.bind(this.updateErrors, this));
-        }
-      }
+    for (var i = 0; i < validationsLength; i++) {
+      var validation = this.validations[i];
+
+      validation(this.value(), this.elements, util.bind(this.updateErrors, this));
     }
   }
 };
