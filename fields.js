@@ -118,15 +118,19 @@
 
     __extends(Field, _super);
 
-    function Field(element, parent) {
+    function Field(element, parent, requiredErrorMessage) {
       var _this = this;
       if (parent == null) {
         parent = 'body';
+      }
+      if (requiredErrorMessage == null) {
+        requiredErrorMessage = 'Field required';
       }
       this.el = $(element);
       this.parent = $(parent);
       this.attributes = {};
       this.val = this.value;
+      this.requiredErrorMessage = requiredErrorMessage;
       this.parent.find("[name='" + (this.el.attr('name')) + "']").on('keyup blur focus change', function(e, options) {
         if (options == null) {
           options = {};
@@ -225,7 +229,7 @@
       this.attributes.evaluations = {};
       if (this.isRequired() && this.el.is(':visible')) {
         if (this.isEmpty()) {
-          this.attributes.evaluations.errors = ['Field required'];
+          this.attributes.evaluations.errors = [this.requiredErrorMessage];
         } else {
           $.extend(this.attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(this.el));
         }
@@ -393,28 +397,38 @@
 
     __extends(Fields, _super);
 
-    Fields.within = function(selector) {
-      if ($(selector).is('input:not([type="submit"]), select, textarea')) {
-        return new Field(selector);
+    Fields.within = function(selector, requiredErrorMessage) {
+      if (requiredErrorMessage == null) {
+        requiredErrorMessage = 'Field required';
       }
-      return new Fields(selector);
+      if ($(selector).is('input:not([type="submit"]), select, textarea')) {
+        return new Field(selector, requiredErrorMessage);
+      }
+      return new Fields(selector, requiredErrorMessage);
     };
 
     Fields["in"] = Fields.at = Fields.within;
 
-    Fields.all = function() {
-      return new Fields('body');
+    Fields.all = function(requiredErrorMessage) {
+      if (requiredErrorMessage == null) {
+        requiredErrorMessage = 'Field required';
+      }
+      return new Fields('body', requiredErrorMessage);
     };
 
-    function Fields(selector) {
+    function Fields(selector, requiredErrorMessage) {
       var model, name, _ref,
         _this = this;
       if (selector == null) {
         selector = 'body';
       }
+      if (requiredErrorMessage == null) {
+        requiredErrorMessage = 'Field required';
+      }
       this.fields = 'input:not([type="submit"]), select, textarea';
       this.el = $(selector);
       this.attributes = {};
+      this.requiredErrorMessage = requiredErrorMessage;
       this.generateModels();
       this.trackValidity();
       _ref = this.models;
@@ -493,7 +507,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         field = _ref[_i];
         if (this.models[$(field).attr('name')] == null) {
-          _results.push(this.models[$(field).attr('name')] = new Field(field, this.el));
+          _results.push(this.models[$(field).attr('name')] = new Field(field, this.el, this.requiredErrorMessage));
         } else {
           _results.push(void 0);
         }

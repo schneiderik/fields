@@ -136,11 +136,12 @@ Events.unbind = Events.off
 # Field Model
 
 class Field extends Events
-  constructor: (element, parent='body')->
+  constructor: (element, parent='body', requiredErrorMessage='Field required')->
     @el         = $(element)
     @parent     = $(parent)
     @attributes = {}
     @val = @value
+    @requiredErrorMessage = requiredErrorMessage
 
     # Update attributes when a user interacts with the field
     @parent.find("[name='#{@el.attr('name')}']").on 'keyup blur focus change', (e, options={})=>
@@ -211,7 +212,7 @@ class Field extends Events
     @attributes.evaluations = {}
     if @isRequired() and @el.is(':visible')
       if @isEmpty()
-        @attributes.evaluations.errors = ['Field required']
+        @attributes.evaluations.errors = [@requiredErrorMessage]
       else
         $.extend @attributes.evaluations, window.FieldsUtils.evaluationRegistry.evaluate(@el)
 
@@ -313,19 +314,20 @@ class EvaluationRegistry extends Events
 # Fields
 
 class Fields extends Events
-  @within: (selector)->
-    return new Field(selector) if $(selector).is 'input:not([type="submit"]), select, textarea'
-    new Fields(selector)
+  @within: (selector, requiredErrorMessage='Field required')->
+    return new Field(selector, requiredErrorMessage) if $(selector).is 'input:not([type="submit"]), select, textarea'
+    new Fields(selector, requiredErrorMessage)
 
   @in = @at = @within
 
-  @all: ->
-    new Fields('body')
+  @all: (requiredErrorMessage='Field required')->
+    new Fields('body', requiredErrorMessage)
 
-  constructor: (selector='body')->
+  constructor: (selector='body', requiredErrorMessage='Field required')->
     @fields = 'input:not([type="submit"]), select, textarea'
     @el = $(selector)
     @attributes = {}
+    @requiredErrorMessage = requiredErrorMessage
     @generateModels()
     @trackValidity()
 
@@ -370,7 +372,7 @@ class Fields extends Events
     @models = {}
     for field in @el.find @fields
       unless @models[ $(field).attr('name') ]?
-        @models[$(field).attr('name')] = new Field(field, @el)
+        @models[$(field).attr('name')] = new Field(field, @el, @requiredErrorMessage)
 
 window.FieldsUtils = {}
 window.FieldsUtils.evaluationRegistry ||= new EvaluationRegistry
